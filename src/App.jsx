@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo  } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TinderCard from "react-tinder-card";
 import Confetti from "react-confetti";
 
@@ -15,7 +15,6 @@ export default function App() {
   const purrRef = useRef(null);
   const meowRef = useRef(null);
 
-  // preload cat URLs
   useEffect(() => {
     const urls = Array.from({ length: TOTAL }, (_, i) => `https://cataas.com/cat?random=${Date.now()}-${i}`);
     urls.forEach((u) => {
@@ -26,13 +25,11 @@ export default function App() {
     childRefs.current = Array(urls.length).fill(null);
   }, []);
 
-  // load sounds
   useEffect(() => {
     purrRef.current = new Audio("https://actions.google.com/sounds/v1/animals/cat_purr_close.ogg");
     meowRef.current = new Audio("https://actions.google.com/sounds/v1/animals/cat_meow.ogg");
   }, []);
 
-  // resize listener for confetti
   useEffect(() => {
     const update = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     update();
@@ -90,9 +87,7 @@ export default function App() {
     setShowSummary(false);
   };
 
-  // ------------------------
   // Loading Screen
-  // ------------------------
   if (cats.length === 0) {
     return (
       <div
@@ -114,9 +109,7 @@ export default function App() {
     );
   }
 
-  // ------------------------
   // Summary Screen
-  // ------------------------
   if (showSummary) {
     return (
       <div
@@ -127,7 +120,7 @@ export default function App() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: "100vh",
+          height: "100vh",
           width: "100vw",
           textAlign: "center",
           overflow: "hidden",
@@ -155,9 +148,7 @@ export default function App() {
     );
   }
 
-  // ------------------------
   // Main Swipe UI
-  // ------------------------
   const visible = cats.slice(currentIndex, currentIndex + 3);
   const progress = Math.round(((currentIndex) / cats.length) * 100);
 
@@ -213,15 +204,10 @@ export default function App() {
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, maxWidth: 420, width: "92vw" }}>
         {/* Card stack container */}
         <div style={{ position: "relative", width: 340, maxWidth: "100%", height: 460 }}>
-          {/* We must render bottom → top so top is last in DOM.
-              visible currently contains [current, next, next2]; we reverse it for rendering.
-          */}
           {visible
-            .slice() // copy
+            .slice()
             .reverse()
             .map((cat, revIndex) => {
-              // revIndex=0 -> originally the last element in visible
-              // compute the real index in cats
               const visibleLength = visible.length;
               const offsetFromTop = visibleLength - 1 - revIndex; // 0 = top card, 1 = next below, ...
               const realIndex = currentIndex + offsetFromTop;
@@ -244,7 +230,7 @@ export default function App() {
                     transform: `translateY(${translateY}px) scale(${scale})`,
                     transition: "transform 220ms ease, opacity 220ms ease",
                     opacity: isTop ? 1 : 0.6,
-                    pointerEvents: isTop ? "auto" : "none", // only top card receives pointer events
+                    pointerEvents: isTop ? "auto" : "none",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -252,7 +238,6 @@ export default function App() {
                 >
                   <TinderCard
                     ref={(el) => {
-                      // assign the card instance to the correct realIndex position
                       childRefs.current[realIndex] = el;
                     }}
                     onSwipe={(dir) => handleSwipe(dir, realIndex)}
